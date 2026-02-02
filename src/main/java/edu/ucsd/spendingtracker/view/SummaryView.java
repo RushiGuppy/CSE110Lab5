@@ -1,23 +1,59 @@
 package edu.ucsd.spendingtracker.view;
 
-import javafx.geometry.*;
-import javafx.scene.control.*;
-import javafx.scene.layout.*;
+import edu.ucsd.spendingtracker.view.charts.IChartProvider;
+import javafx.geometry.Pos;
+import javafx.scene.Node;
+import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
+import javafx.util.StringConverter;
 
 public class SummaryView extends VBox {
     private Label totalLabel = new Label();
     private Button backButton = new Button("Back to Expenses");
+
+    private final ComboBox<IChartProvider> chartSelector = new ComboBox<>();
+
+    private final StackPane chartContainer = new StackPane();
 
     public SummaryView() {
         this.setAlignment(Pos.CENTER);
         this.setSpacing(20);
         this.setStyle("-fx-background-color: #FFFFFF;");
 
-        Label title = new Label("Total Spending");
+        Label title = new Label("Spending Analysis");
         title.setStyle("-fx-font-size: 20px; -fx-font-weight: bold;");
         totalLabel.setStyle("-fx-font-size: 32px; -fx-text-fill: #2E7D32;");
 
-        this.getChildren().addAll(title, totalLabel, backButton);
+        chartSelector.setPromptText("Select Visualization type");
+        chartSelector.setPrefWidth(200);
+
+        chartSelector.setConverter(new StringConverter<IChartProvider>() {
+          @Override
+          public String toString(IChartProvider provider){
+            return (provider == null) ? "" : provider.getDisplayName();
+          }
+
+          @Override
+          public IChartProvider fromString(String string){
+            return null;
+          }
+        });
+
+        chartContainer.setPrefSize(400, 300);
+        chartContainer.setStyle("-fx-border-color: #EEEEEE; -fx-border-width: 1; -fx-border-radius: 5;");
+
+        backButton.setStyle("-fx-background-color: #757575; -fx-text-fill: white;");
+
+        this.getChildren().addAll(
+          title, 
+          totalLabel, 
+          new Label("View Mode"),
+          chartSelector,
+          chartContainer,
+          backButton);
     }
 
     public void setTotal(double total) {
@@ -26,5 +62,17 @@ public class SummaryView extends VBox {
     /// Hello
     public Button getBackButton() {
         return backButton;
+    }
+
+    public void setChartDisplay(Node chartNode){
+      chartContainer.getChildren().clear();
+      if(chartNode!= null){
+        chartContainer.getChildren().add(chartNode);
+
+      }
+    }
+
+    public ComboBox<IChartProvider> getChartSelector(){
+      return chartSelector;
     }
 }
